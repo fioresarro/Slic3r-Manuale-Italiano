@@ -1,103 +1,96 @@
-% Command Line Usage
+% Utilizzo da Linea di Comanado
+Quasi tutte le caratteristiche di Slic3r possono essere accedute da linea di comando.Puoi quindi
+chiamare Slic3r come parte di uno script o installarlo su un sistema embedded o un server remoto.
 
-Almost all Slic3r features can be accessed from the command line. You can
-thus call Slic3r as part of a script or install it in an embedded system
-or headless server.
-
-To get the full listing and reference of available command line switches,
-just run:
+Per ottenere l'elenco completo ed i riferimenti dei comandi disponibili da linea
+di comando, basta eseguire:
 
     slic3r --help
 
-**Note:** you might need to replace `slic3r` with the name and/or path to the
-Slic3r executable which might be:
+**Nota:** potresti avere bisogno di sostituire `slic3r` con il nome e/o il percorsodell'eseguibile di Slic3r che potrebbe essere:
 
-* `slic3r-console.exe` on Windows
-* `slic3r` on GNU/Linux
-* `Slic3r.app/Contents/MacOS/slic3r` on MacOS X
-* `perl slic3r.pl` on all platforms if you're running from git/source code
+* `slic3r-console.exe` su Windows
+* `slic3r` su GNU/Linux
+* `Slic3r.app/Contents/MacOS/slic3r` su MacOS X
+* `perl slic3r.pl` su tutte le piattaforme, se si sta eseguendo da Git da codice sorgente.
 
-Generating G-code
+Generare G-code
 -----------------
-
-In order to slice a model into G-code you just need to supply the STL file
-along with any config option you'd like to use:
+Per convertire un modello in G-code hai bisogno di fornirgli il file STL, insieme a qualsiasi configurazione intendi utilizzare:
 
     slic3r my_model.stl --layer-height 0.2
+Questo genererà un file denominato *mio_modello.gcode* nella stessa cartella
+ del file STL di input. Si consiglia di specificare un percorso di output personalizzato:
 
-This will generate a file named *my_model.gcode* in the same directory as 
-the input STL file. You may want to specify a custom output path:
+    slic3r mio_modello.stl --layer-height 0.2 --output /percorso/di/output.gcode
 
-    slic3r my_model.stl --layer-height 0.2 --output /path/to/output.gcode
 
-The argument for `--output` can also be a directory; in that case the file
-will follow the automatic naming scheme (which you can override using the
-`--output-filename-format` option; see manual chapter about placeholders).
+L'argomento per `--output`può anche essere una cartella;in questo caso il file
+assumerà lo schema di nominazione automatica (che può essere sovrascritta utilizzando l'opzione
+`--output-filename-format` ; vedere il capitolo apposito).
 
-### Configuration
+### Configurazione
 
-**Note:** the print/filament/printer presets defined in the graphical interface
-are completely ignored when running in command line mode. Slic3r will always
-default to its factory default settings.
+**Nota:**  le impostazioni base di stampa del filamento/stampa/stampante definite nell' interfaccia grafica vengono completamente ignorati quando si eseguono comandi nella modalità linea di comando. Slic3r verrà sempre settato alle sue impostazioni di default.
 
-You'll need to export your desired configuration with the *Export Config...*
-command, which is located in the *File* menu. It will prompt you to save a
-`.ini` file that you can load from command line this way:
+Avrai bisogno di esportare la tua configurazione desiderata con il comando *Export Config...*,
+che è collocato nel menu'*File*. Esso ti porterà a salvare un file `.ini` che potrai importare 
+da linea di comando in questo modo:
 
     slic3r my_model.stl --load my_config.ini
 
-You can override single options by appending them as command line switches:
+Tu puoi sovrascrivere singole opzioni aggiungendole alla fine del comando come linea di comando:
 
     slic3r my_model.stl --load my_config.ini --fill-pattern concentric
-
-You can also create a config file from command line:
+Puoi anche creare un file di configurazione da linea di comando:
 
     slic3r --nozzle-diameter 0.35 --filament-diameter 2.85 \
         --temperature 185 --first-layer-temperature 195 --layer-height 0.2 \
         --save my_config.ini
 
-If you're an advanced user you can split your configuration into multiple 
-*.ini* files and load them by appending multiple `--load` switches.
+Se sei un utente avanzato puoi suddividere le tue configurazioni in piu'
+file *.ini* e caricarli aggiungendo più comandi di `--load`.
 
-One more way to use the print/filament/printer presets on command line is
-launching Slic3r with the `--autosave` option:
+Uno o altri modi per usare le impostazioni base di stampa del filamento/stampa/stampante
+da linea di comando è avviando Slic3r con l'opzione  `--autosave` :
 
     slic3r --autosave my_config.ini
 
-The above command will launch the graphical interface of Slic3r but will
-automatically export the current configuration to the specified file. Thus,
-the last used presets will be remembered whenever you `--load` that file.
+Il comando sopra espresso avviera' l'interfaccia grafica di Slic3r but
+esporterà automaticamente la configurazione corrente dello specifico file.
+Quindi, l'ultima configurazione base verra' ricordata quando tu caricherai
+quel file con il comando `--load` .
 
-### Processing multiple input files
+### Processare più file di input
 
-If you supply multiple input files Slic3r will process them separately, 
-by generating a distinct G-code file for each one:
+Se tu fornisci piu' file di input a Slic3r, esso li processeraà separatamente
+generando un distinto G-code per ogni file:
 
     slic3r model1.stl model2.stl model3.stl
 
-The command above will generate *model1.gcode*, *model2.gcode*,
+Il comando di sopra generera' *model1.gcode*, *model2.gcode*,
 *model3.gcode*.
 
-If you want to process multiple files as a single print job, you can use
-the `--merge` (or `-m`) option:
+Se tu vuoi processare più file come un singolo lavoro di stampa, tu puoi 
+utilizzare l'opzione `--merge` (o `-m`):
     
     slic3r -m model1.stl model2.stl model3.stl
 
-This will only generate a file named *model1.gcode* (but you can use the 
-`--output` option described above to set a custom name) containing all three
-objects. Note that auto-arranging currently works best when all objects have
-similar sizes.
+Questo genererà soltanto un nome file *model1.gcode* (ma tu puoi usare 
+l'opzione `--output` descritta sopra per impostare un nome personalizzato) 
+che contiene tutti e tre gli oggetti. Nopta che auto-arranging attualmente 
+funziona al meglio quando tutti gli oggetti hanno dimensioni simili.
 
-### Positioning files in the G-code coordinates
+### Posizionare i file nelle coordinate G-code
 
-Input file(s) will be centered around the G-code point defined by the
-`--print-center` option:
+I file di input (uno o più) verranno centrati attorno ad un punto di G-code definito
+dell'opzione `--print-center`:
 
     slic3r my_model.stl --print-center 40,40
 
-By default, the center point is set to 100,100.
+Di default, il punto di centro e' impostato a 100,100.
 
-Repairing models
+Riparando Modelli
 ----------------
 
 Slic3r can be used to repair files from command line:
